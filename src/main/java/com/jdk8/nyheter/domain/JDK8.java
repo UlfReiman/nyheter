@@ -20,7 +20,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class Lambda {
+public class JDK8 {
 
 
   public static void main(String[] args) {
