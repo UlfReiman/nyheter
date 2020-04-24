@@ -10,16 +10,38 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.StringJoiner;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class Lambda {
 
 
   public static void main(String[] args) {
+    StringJoiner stringJoiner = new StringJoiner(",");
+    stringJoiner.add("1").add("2").add("3");
+    System.out.println(stringJoiner.toString());
+    System.out.println(String.join(" ,", "1", "2", "3"));
+
+    Map<Integer, String> HOSTING = new HashMap<>();
+    HOSTING.put(1, "linode.com");
+    HOSTING.put(2, "heroku.com");
+    HOSTING.put(3, "digitalocean.com");
+    HOSTING.put(4, "aws.amazon.com");
+    //Map -> Stream -> Filter -> String
+    String resultS = "";
+    resultS = HOSTING.entrySet().stream()
+        .filter(map -> "aws.amazon.com".equals(map.getValue()))
+        .map(map -> map.getValue())
+        .collect(Collectors.joining());
+
+    System.out.println("With Java 8 : " + resultS);
 
     Instant start = Instant.now();
 
