@@ -10,11 +10,15 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.Spliterator;
 import java.util.StringJoiner;
+import java.util.TreeSet;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -24,6 +28,40 @@ public class JDK8 {
 
 
   public static void main(String[] args) {
+
+
+
+    String[] stream1 = {"one", "two", "three", "four"};
+    spliteratorExample(stream1);
+
+    ArrayList<String> listA = new ArrayList<>();
+    listA.add("A");
+    listA.add("B");
+    listA.add("C");
+    listA.add("D");
+    spliterator(listA);
+
+    SortedSet<String> set = new TreeSet<>(Collections.reverseOrder());
+    set.add("A");
+    set.add("D");
+    set.add("C");
+    set.add("B");
+    setSpliterator(set);
+
+    Map<String, Employee> map1 = new HashMap<>();
+    Map<String, Employee> map2 = new HashMap<>();
+    Employee employee1 = new Employee(1L, "Henry");
+    map1.put(employee1.getName(), employee1);
+    Employee employee2 = new Employee(22L, "Annie");
+    map1.put(employee2.getName(), employee2);
+    Employee employee3 = new Employee(8L, "John");
+    map1.put(employee3.getName(), employee3);
+    Employee employee4 = new Employee(2L, "George");
+    map2.put(employee4.getName(), employee4);
+    Employee employee5 = new Employee(3L, "Henry");
+    map2.put(employee5.getName(), employee5);
+    ConcatEmployees(map1, map2);
+
     StringJoiner stringJoiner = new StringJoiner(",");
     stringJoiner.add("1").add("2").add("3");
     System.out.println(stringJoiner.toString());
@@ -61,9 +99,9 @@ public class JDK8 {
     System.out.println("localDate" + localDate);
 
     List<String> givenList = Arrays.asList("a", "bb", "ccc", "dd");
-    List<String> result = givenList.stream()
+    List<String> result5 = givenList.stream()
         .collect(toList());
-    Set<String> resul = givenList.stream()
+    Set<String> result6 = givenList.stream()
         .collect(toSet());
 
     Stream<String> stream = givenList.stream();
@@ -174,6 +212,36 @@ public class JDK8 {
         .forEach(person -> {
           System.out.println(person.getAge() + ", " + person.getGender());
         });
+  }
+
+  private static void ConcatEmployees(Map<String, Employee> map1, Map<String, Employee> map2) {
+    Map<String, Employee> result = Stream.concat(map1.entrySet().stream(), map2.entrySet().stream())
+        .collect(Collectors.toMap(
+            Map.Entry::getKey,
+            Map.Entry::getValue,
+            (value1, value2) -> new Employee(value2.getId(), value1.getName())));
+    System.out.print(result);
+  }
+
+  private static void setSpliterator(SortedSet<String> set) {
+    System.out.println(set);
+
+    System.out.println(set.spliterator().getComparator());
+  }
+
+  private static void spliterator(ArrayList<String> listA) {
+    Spliterator<String> spliterator = listA.spliterator();
+
+    spliterator.forEachRemaining(System.out::println);
+  }
+
+  private static void spliteratorExample(String[] stream1) {
+    Spliterator<String> s1 = Stream.of(stream1).spliterator();
+    Spliterator<String> s2 = s1.trySplit();
+    System.out.println("-- first Spliterator --");
+    s1.forEachRemaining(System.out::println);
+    System.out.println("-- second Spliterator --");
+    s2.forEachRemaining(System.out::println);
   }
 
   private static Predicate<Person> personIsMale() {

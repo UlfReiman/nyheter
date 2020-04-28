@@ -8,6 +8,7 @@ public class Employee {
   String name;
   double salary, enteredDoub;
   int enteredNum;
+  long id;
   Scanner console = new Scanner(System.in);
 
   // Employee() Construction taking in arguments to set name and salary
@@ -22,7 +23,14 @@ public class Employee {
   Employee() {
   }
 
-  public Employee(int i, String jeff_bezos, double v) {
+  public Employee(int id, String name, double v) {
+  }
+
+  public Employee(long id, String name) {
+  }
+
+  public String getName() {
+    return name;
   }
 
   // Allows to changes salary by taking an amount argument from user input
@@ -149,5 +157,14 @@ public class Employee {
     } while (enteredDoub <= 0);
 
     return enteredDoub;
+  }
+
+
+  public long getId() {
+    return id;
+  }
+
+  public void setId(long id) {
+    this.id = id;
   }
 }
