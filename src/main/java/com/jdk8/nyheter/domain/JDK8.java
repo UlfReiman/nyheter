@@ -1,9 +1,14 @@
 package com.jdk8.nyheter.domain;
 
 
+import static java.util.stream.Collectors.flatMapping;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -20,19 +25,68 @@ import java.util.Spliterator;
 import java.util.StringJoiner;
 import java.util.TreeSet;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class JDK8 {
 
+  public static void main(String[] args) throws IOException {
 
-  public static void main(String[] args) {
 
+
+    Path path1 = Paths.get("TomSawyer1.txt");
+    Path path2 = Paths.get("TomSawyer2.txt");
+    Path path3 = Paths.get("TomSawyer3.txt");
+    Stream<String> s1=Files.lines(path1);
+    Stream<String> s2=Files.lines(path2);
+    Stream<String> s3=Files.lines(path3);
+    Stream<String> s = Stream.of(s1, s2, s3).flatMap(Function.identity()); //varargs
+
+   
+
+    Path p1 = Paths.get("p1.txt");
+    Path p2 = Paths.get("p2.txt");
+
+    Stream<Integer> stream5 = Stream.of(1, 3, 5);
+    Stream<Integer> stream2 = Stream.of(2, 4, 6);
+    Stream<Integer> stream3 = Stream.of(18, 15, 36);
+    Stream<Integer> stream4 = Stream.of(99);
+
+
+
+   /* Path path1 = Paths.get("TomSawyer1.txt");
+    Path path2 = Paths.get("TomSawyer2.txt");
+    Path path3 = Paths.get("TomSawyer3.txt");
+    Stream<String> s1=Files.lines(path1);
+    Stream<String> s2=Files.lines(path2);
+    Stream<String> s3=Files.lines(path3);*/
+
+
+
+
+
+
+    Function<String, Stream<String>> splitIntoWords = line -> Pattern.compile(" ")
+        .splitAsStream(line);
+
+    Stream.of(s1, s2, s3)
+        .flatMap(Function.identity())
+        .flatMap(splitIntoWords).collect(Collectors.toSet());
 
 
     String[] stream1 = {"one", "two", "three", "four"};
     spliteratorExample(stream1);
+
+
+    Stream<Stream<String>> streamStream=Stream.of(s1,s2,s3);
+    System.out.println(streamStream.count());
+
+
+
+
 
     ArrayList<String> listA = new ArrayList<>();
     listA.add("A");
@@ -258,6 +312,16 @@ public class JDK8 {
 
   private static Predicate<Person> personIsYoungerThan(int age) {
     return person -> person.getAge() < age;
+  }
+
+  private static Stream<String> concatenateStrings(Path path1, Path path2) throws IOException {
+    Stream<String> s1 = Files.lines(path1);
+    Stream<String> s2 = Files.lines(path2);
+    Stream<String> concat = Stream.concat(s1, s2);
+
+
+    return concat;
+
   }
 
 }
