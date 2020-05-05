@@ -1,7 +1,6 @@
 package com.jdk8.nyheter.domain;
 
 
-import static java.util.stream.Collectors.flatMapping;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 
@@ -16,7 +15,9 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.IntSummaryStatistics;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -27,25 +28,78 @@ import java.util.TreeSet;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
+import java.util.function.ToIntFunction;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class JDK8 {
 
+  private Set<String> shakespeare;
+
   public static void main(String[] args) throws IOException {
+    List<Person> persons2 =
+        Arrays.asList(
+            new Person("Max", 18, Gender.MALE),
+            new Person("Peter", 23, Gender.MALE),
+            new Person("Pamela", 23, Gender.FEMALE),
+            new Person("David", 12, Gender.MALE));
 
+    persons2.parallelStream().filter(person -> person.getAge() > 20).forEach(System.out::print);
 
+    List<Person> persons1 =
+        Arrays.asList(
+            new Person("Max", 18, Gender.MALE),
+            new Person("Peter", 23, Gender.MALE),
+            new Person("Pamela", 23, Gender.FEMALE),
+            new Person("David", 12, Gender.MALE));
+
+    persons1.stream()
+        .filter(personIsBetweenAges(16, 25))
+        .forEach(person -> {
+          System.out.println(person.getAge() + ", " + person.getGender());
+        });
 
     Path path1 = Paths.get("TomSawyer1.txt");
     Path path2 = Paths.get("TomSawyer2.txt");
     Path path3 = Paths.get("TomSawyer3.txt");
-    Stream<String> s1=Files.lines(path1);
-    Stream<String> s2=Files.lines(path2);
-    Stream<String> s3=Files.lines(path3);
-    Stream<String> s = Stream.of(s1, s2, s3).flatMap(Function.identity()); //varargs
+    Stream<String> s1 = Files.lines(path1);
+    Stream<String> s2 = Files.lines(path2);
+    Stream<String> s3 = Files.lines(path3);
 
-   
+    Stream<String> p = Stream.of(s1, s2, s3).flatMap(Function.identity())
+        .flatMap(textToWords()); //varargs
+    Set<String> wordsSet = p.collect(toSet());
+    System.out.println(wordsSet);
+
+    Set<String> shakespeare = Files.lines(Paths.get("words.shakespeare.txt"))
+        .map(word -> word.toLowerCase()).collect(Collectors.toSet());
+
+    Set<String> scrabble = Files.lines(Paths.get("ospd.txt"))
+        .map(word -> word.toLowerCase()).collect(Collectors.toSet());
+    final int[] scrabbleENScore = {
+        // a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p,  q, r, s, t, u, v, w, x, y,  z
+        1, 3, 3, 2, 1, 4, 2, 4, 1, 8, 5, 1, 3, 1, 1, 3, 10, 1, 1, 1, 1, 4, 4, 8, 4, 10};
+
+    Function<String, Integer> score = words -> words.chars()
+        .map(letter -> scrabbleENScore[letter - 'a']).sum();
+    ToIntFunction<String> intScore = words -> words.chars()
+        .map(letter -> scrabbleENScore[letter - 'a']).sum();
+
+    Object array;
+    Supplier<Stream<int[]>> streamSupplier = () -> Stream.of(scrabbleENScore);
+
+    String scoreResult = shakespeare.stream()
+        .filter(words -> scrabble.contains(words))
+        .max(Comparator.comparing(score)).get();
+
+    IntSummaryStatistics intSummaryStatistics = shakespeare.stream()
+        .filter(scrabble::contains).mapToInt(intScore).summaryStatistics();
+    System.out.println("Stats:: " + intSummaryStatistics);
+
+    System.out.println(shakespeare.size());
+    System.out.println(scrabble.size());
 
     Path p1 = Paths.get("p1.txt");
     Path p2 = Paths.get("p2.txt");
@@ -64,29 +118,17 @@ public class JDK8 {
     Stream<String> s2=Files.lines(path2);
     Stream<String> s3=Files.lines(path3);*/
 
+    Function<String, Stream<String>> splitIntoWords = textToWords();
 
-
-
-
-
-    Function<String, Stream<String>> splitIntoWords = line -> Pattern.compile(" ")
-        .splitAsStream(line);
-
-    Stream.of(s1, s2, s3)
+  /*  Set<String> ord = Stream.of(s1, s2, s3)
         .flatMap(Function.identity())
-        .flatMap(splitIntoWords).collect(Collectors.toSet());
-
-
+        .flatMap(splitIntoWords).collect(toSet());
+*/
     String[] stream1 = {"one", "two", "three", "four"};
     spliteratorExample(stream1);
 
-
-    Stream<Stream<String>> streamStream=Stream.of(s1,s2,s3);
+    Stream<Stream<String>> streamStream = Stream.of(s1, s2, s3);
     System.out.println(streamStream.count());
-
-
-
-
 
     ArrayList<String> listA = new ArrayList<>();
     listA.add("A");
@@ -163,12 +205,12 @@ public class JDK8 {
     List<String> myList =
         Arrays.asList("a1", "a2", "b1", "c2", "c1");
 
-    myList
+   /* myList
         .stream()
         .filter(s -> s.startsWith("c"))
         .map(String::toUpperCase)
         .sorted()
-        .forEach(System.out::println);
+        .forEach(System.out::println);*/
 
     Employee[] arrayOfEmps = {
         new Employee(1, "Jeff Bezos", 100000.0),
@@ -212,10 +254,9 @@ public class JDK8 {
         Arrays.asList("Reflection", "Collection", "Stream");
 
     // demonstration of filter method
-    List<String> result3 = names.stream().filter(s -> s.startsWith("S"))
+    List<String> result3 = names.stream().filter(r -> r.startsWith("S"))
         .collect(toList());
     System.out.println(result3);
-
     // demonstration of sorted method
     List<String> show =
         names.stream().sorted().collect(toList());
@@ -248,24 +289,22 @@ public class JDK8 {
 
     // declare the predicate type as string and use
     // lambda expression to create object
-    Predicate<String> p = (s) -> s.startsWith("G");
+    Predicate<String> pr = (s) -> s.startsWith("G");
 
     // Iterate through the list
     for (String st : name) {
       // call the test method
-      if (p.test(st)) {
+      if (pr.test(st)) {
         System.out.println(st);
       }
     }
-    List<Person> people = Arrays.asList(new Person(20, Gender.MALE),
-        new Person(45, Gender.FEMALE), new Person(50, Gender.MALE),
-        new Person(65, Gender.MALE));
 
-    people.stream()
-        .filter(personIsBetweenAges(16, 25))
-        .forEach(person -> {
-          System.out.println(person.getAge() + ", " + person.getGender());
-        });
+  }
+
+
+  private static Function<String, Stream<String>> textToWords() {
+    return line -> Pattern.compile(" ")
+        .splitAsStream(line);
   }
 
   private static void ConcatEmployees(Map<String, Employee> map1, Map<String, Employee> map2) {
@@ -318,7 +357,6 @@ public class JDK8 {
     Stream<String> s1 = Files.lines(path1);
     Stream<String> s2 = Files.lines(path2);
     Stream<String> concat = Stream.concat(s1, s2);
-
 
     return concat;
 

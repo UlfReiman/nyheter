@@ -1,48 +1,15 @@
 package com.jdk8.nyheter.domain;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.function.Function;
+class Person {
 
-public class Person {
+  String name;
+  int age;
+  Gender gender;
 
-  private final Map<String, Function> printMap = new HashMap<>();
-  private String givenName;
-  private String surName;
-  private int age;
-  private Gender gender;
-  private String eMail;
-  private String phone;
-  private String address;
+  Person(String name, int age, Gender gender) {
 
-  public Person(int i, Gender female) {
-  }
-
-  public Map<String, Function> getPrintMap() {
-    return printMap;
-  }
-
-  public String getGivenName() {
-    return givenName;
-  }
-
-  public void setGivenName(String givenName) {
-    this.givenName = givenName;
-  }
-
-  public String getSurName() {
-    return surName;
-  }
-
-  public void setSurName(String surName) {
-    this.surName = surName;
-  }
-
-  public int getAge() {
-    return age;
-  }
-
-  public void setAge(int age) {
+    this.gender = gender;
+    this.name = name;
     this.age = age;
   }
 
@@ -54,27 +21,24 @@ public class Person {
     this.gender = gender;
   }
 
-  public String geteMail() {
-    return eMail;
+  public int getAge() {
+    return age;
   }
 
-  public void seteMail(String eMail) {
-    this.eMail = eMail;
+  public void setAge(int age) {
+    this.age = age;
   }
 
-  public String getPhone() {
-    return phone;
+  public String getName() {
+    return name;
   }
 
-  public void setPhone(String phone) {
-    this.phone = phone;
+  public void setName(String name) {
+    this.name = name;
   }
 
-  public String getAddress() {
-    return address;
-  }
-
-  public void setAddress(String address) {
-    this.address = address;
+  @Override
+  public String toString() {
+    return name;
   }
 }
