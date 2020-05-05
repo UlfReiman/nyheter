@@ -46,7 +46,8 @@ public class JDK8 {
             new Person("Pamela", 23, Gender.FEMALE),
             new Person("David", 12, Gender.MALE));
 
-    persons2.parallelStream().filter(person -> person.getAge() > 20).forEach(System.out::print);
+    persons2.parallelStream().filter(person -> person.getAge() > 20)
+        .collect(Collectors.toList()).forEach(System.out::println);
 
     List<Person> persons1 =
         Arrays.asList(
