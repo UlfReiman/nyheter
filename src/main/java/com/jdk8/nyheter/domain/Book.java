@@ -1,7 +1,19 @@
 package com.jdk8.nyheter.domain;
 
-public class Book {
+class Book {
 
-  public Book(String a) {
+  private String name;
+
+  public Book(String name) {
+    this.name = name;
+  }
+
+  public String getName() {
+    System.out.println(name);
+    return name;
+  }
+
+  public void setName(String name) {
+    this.name = name;
   }
 }

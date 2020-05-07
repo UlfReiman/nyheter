@@ -39,6 +39,27 @@ public class JDK8 {
   private Set<String> shakespeare;
 
   public static void main(String[] args) throws IOException {
+
+    List<Book> books = new ArrayList<>();
+    books.add(new Book("A"));
+    books.add(new Book("D"));
+    books.add(new Book("C"));
+    books.add(new Book("B"));
+
+    Function<Book, String> function = Book::getName;
+    Consumer<Book> consumerFunction = Book::getName;
+    books.forEach(Book::getName);
+    books.forEach(consumerFunction);
+
+    Message message = new Message("java2s.com");
+    Person person = new Person("Peter", 28, Gender.MALE);
+
+    Consumer<Message> messageConsumer = (t) -> System.out.println(t);
+    // messageConsumer.accept(message);
+
+    Consumer<Person> personConsumer = (t) -> System.out.println(t);
+    personConsumer.accept(person);
+
     List<Person> persons2 =
         Arrays.asList(
             new Person("Max", 18, Gender.MALE),
