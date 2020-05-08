@@ -34,11 +34,30 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+@FunctionalInterface
+interface Converter<F, T> {
+
+  T convert(F from);
+}
+
 public class JDK8 {
 
   private Set<String> shakespeare;
 
   public static void main(String[] args) throws IOException {
+
+
+    Function<String,Integer> stringToInt = s ->  Integer.valueOf(s);
+    int i = stringToInt.apply("1");
+
+    Converter<String, Integer> integerConverter1 = (from) -> Integer.valueOf(from);
+    Integer converted1 = integerConverter1.convert("123");
+
+    Message message = new Message("java2s.com");
+
+    Consumer<Message> messageConsumer = (t) -> System.out.println(t);
+    Consumer<Message> endConsumer = (t) -> System.out.println("End: " + t);
+    messageConsumer.andThen(endConsumer).accept((message));
 
     List<Book> books = new ArrayList<>();
     books.add(new Book("A"));
@@ -51,11 +70,11 @@ public class JDK8 {
     books.forEach(Book::getName);
     books.forEach(consumerFunction);
 
-    Message message = new Message("java2s.com");
+    Message message2 = new Message("java2s.com");
     Person person = new Person("Peter", 28, Gender.MALE);
 
-    Consumer<Message> messageConsumer = (t) -> System.out.println(t);
-    // messageConsumer.accept(message);
+    Consumer<Message> messageConsumer2 = (t) -> System.out.println(t);
+    messageConsumer.accept(message2);
 
     Consumer<Person> personConsumer = (t) -> System.out.println(t);
     personConsumer.accept(person);
